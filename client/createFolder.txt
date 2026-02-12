@@ -1,0 +1,19 @@
+export default function CreateFolder({ parentId, onAdd }) {
+  const addFolder = () => {
+    const name = prompt("Folder ka naam daalo:");
+    if (!name) return;
+
+    onAdd(parentId, {
+      id: Date.now(),
+      name,
+      children: [],
+      contents: []
+    });
+  };
+
+  return (
+    <button onClick={addFolder} className="border" style={{ marginLeft: 8 }}>
+      + Folder
+    </button>
+  );
+}

@@ -1,0 +1,73 @@
+import { useState } from "react";
+import AddContent from "./AddContent";
+import ContentAccordion from "./ContentAccodion";
+import { ImCross } from "react-icons/im";
+
+export default function ContentArea({ folders, setFolders, selectedId }) {
+  const [showAdd, setShowAdd] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const findFolderById = (items, id) => {
+    for (let it of items) {
+      if (it.id === id) return it;
+      if (it.children) {
+        const found = findFolderById(it.children, id);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+  const addContent = (content) => {
+    const update = (items) =>
+      items.map((it) => {
+        if (it.id === selectedId) {
+          return { ...it, contents: [...(it.contents || []), content] };
+        }
+        if (it.children) return { ...it, children: update(it.children) };
+        return it;
+      });
+
+    setFolders(update(folders));
+    setShowAdd(false);
+  };
+
+  if (!selectedId)
+    return (
+      <p className="text-xl font-bold tracking-wider text-white">
+        Kisi folder par click karo
+      </p>
+    );
+
+  const folder = findFolderById(folders, selectedId);
+  const contents = (folder?.contents || []).filter(
+    (c) =>
+      c.title.toLowerCase().includes(search.toLowerCase()) ||
+      c.description.toLowerCase().includes(search.toLowerCase()),
+  );
+// border     w-full outline-none focus:border-2
+  return (
+    <div className="p-5 flex flex-col justify-between items-center gap-5">
+      <div className="w-full">
+        <div className="flex justify-between items-center">
+          <input
+            className="w-150 py-1 px-2 bg-gray-300 text-lg font-semi-bold tracking-wider border-white rounded-md placeholder:text-sm placeholder:font-medium focus:border-blue-500 outline-none focus:border-2  "
+            placeholder="Search title / description..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <button
+            className="text-black py-2 rounded-md px-2 text-md font-bold shadow-2x  bg-gray-300 hover:text-white hover:bg-blue-500 transition-all duration-700 ease-in-out "
+            onClick={() => setShowAdd((p) => !p)}
+          >
+            {showAdd ? <ImCross className="text-[22px]" /> : "Add Content"}
+          </button>
+        </div>
+      </div>
+
+      {showAdd && <AddContent onAdd={addContent} />}
+
+      <ContentAccordion contents={contents} />
+    </div>
+  );
+}

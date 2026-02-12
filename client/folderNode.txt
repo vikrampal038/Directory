@@ -1,0 +1,186 @@
+import { useState } from "react";
+import {
+  MdOutlineKeyboardArrowRight,
+  MdOutlineKeyboardArrowDown,
+} from "react-icons/md";
+// import { RxDotFilled } from "react-icons/rx";
+import { FcOpenedFolder } from "react-icons/fc";
+import { FaPlus } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
+
+export default function FolderNode({
+  folder,
+  setData,
+  selectedId,
+  setSelectedId,
+}) {
+  const [open, setOpen] = useState(true);
+  const [showInput, setShowInput] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const addSubFolder = () => {
+    if (!newName.trim()) return;
+
+    setData((prev) => {
+      const addToTree = (items) =>
+        items.map((item) => {
+          if (item.id === folder.id) {
+            return {
+              ...item,
+              children: [
+                ...(item.children || []),
+                {
+                  id: Date.now(),
+                  name: newName.trim(),
+                  children: [],
+                  contents: [],
+                },
+              ],
+            };
+          }
+          if (item.children?.length) {
+            return { ...item, children: addToTree(item.children) };
+          }
+          return item;
+        });
+
+      return addToTree(prev);
+    });
+
+    setNewName("");
+    setShowInput(false);
+  };
+
+  const deleteFolder = () => {
+    setData((prev) => {
+      const removeFromTree = (items) =>
+        items
+          .filter((item) => item.id !== folder.id)
+          .map((item) => ({
+            ...item,
+            children: item.children ? removeFromTree(item.children) : [],
+          }));
+
+      return removeFromTree(prev);
+    });
+
+    setConfirmDelete(false);
+  };
+
+  return (
+    <div className="w-full">
+      <div
+        className={`flex items-center justify-between rounded-md px-1 py-1 hover:bg-white/5 ${
+          selectedId === folder.id ? "bg-white/10" : ""
+        }`}
+      >
+        {/* Arrow */}
+        <span
+          onClick={() => setOpen(!open)}
+          className="cursor-pointer text-white"
+        >
+          {folder.children?.length ? (
+            open ? (
+              <MdOutlineKeyboardArrowDown size={18} />
+            ) : (
+              <MdOutlineKeyboardArrowRight size={18} />
+            )
+          ) : ( ""
+          )}
+        </span>
+
+        {/* Folder name */}
+        <span
+          onClick={() => setSelectedId(folder.id)}
+          className="flex items-center gap-1.5 text-white text-sm sm:text-base cursor-pointer flex-1 truncate"
+        >
+          <FcOpenedFolder /> {folder.name}
+        </span>
+
+        {/* Actions */}
+        <span className="flex items-center gap-3 text-white">
+          <button
+            onClick={() => {
+              setShowInput(true);
+              setConfirmDelete(false);
+            }}
+            className="hover:text-[#5bd68e]"
+          >
+            <FaPlus />
+          </button>
+
+          <button
+            onClick={() => {
+              setConfirmDelete(true);
+              setShowInput(false);
+            }}
+            className="hover:text-red-400"
+          >
+            <MdDelete />
+          </button>
+        </span>
+      </div>
+
+      {/* Inline Add Input */}
+      {showInput && (
+        <div className="ml-6 mt-1 flex gap-2 justify-between items-center  border border-white rounded-md">
+          <input
+            autoFocus
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && addSubFolder()}
+            placeholder="New folder name"
+            className="py-1 px-2 rounded-md text-sm w-full outline-0  text-white"
+          />
+
+          <div className="flex justify-center items-center gap-3 bg-white p-1.5 rounded-r-sm">
+            <button onClick={addSubFolder} className="hover:text-green-400 text-lg">
+              <FaPlus />
+            </button>
+            <button
+              onClick={() => {
+                setShowInput(false);
+                setNewName("");
+              }}
+              className="hover:text-red-400 text-lg"
+            >
+              <MdDelete />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Inline Delete Confirm */}
+      {confirmDelete && (
+        <div className="mt-2 flex gap-2 items-center justify-end text-xs text-white/80">
+          <span className="text-[14px] font-fold tracking-wider">Delete?</span>
+          <button onClick={deleteFolder} className="text-red-400 text-[14px] font-fold tracking-wider">
+            Yes
+          </button>
+          <button
+            onClick={() => setConfirmDelete(false)}
+            className="text-white text-[14px] font-fold tracking-wider"
+          >
+            No
+          </button>
+        </div>
+      )}
+
+      {/* Children */}
+      {open && folder.children?.length > 0 && (
+        <div className="ml-4 mt-1 space-y-1">
+          {folder.children.map((child) => (
+            <FolderNode
+              key={child.id}
+              folder={child}
+              setData={setData}
+              selectedId={selectedId}
+              setSelectedId={setSelectedId}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
