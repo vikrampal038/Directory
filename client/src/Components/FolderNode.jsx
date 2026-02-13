@@ -77,14 +77,14 @@ export default function FolderNode({
   return (
     <div className="w-full relative">
       <div
-        className={`flex items-center justify-between rounded-md px-1 py-1 hover:bg-white/5 ${
+        className={`flex items-center justify-between gap-2 rounded-md px-2 py-1.5 sm:px-2 sm:py-1 hover:bg-white/5 ${
           selectedId === folder.id ? "bg-white/10" : ""
         }`}
       >
         {/* Arrow */}
         <span
           onClick={() => setOpen(!open)}
-          className="cursor-pointer text-white"
+          className="cursor-pointer text-white shrink-0"
         >
           {folder.children?.length ? (
             open ? (
@@ -93,27 +93,28 @@ export default function FolderNode({
               <MdOutlineKeyboardArrowRight size={18} />
             )
           ) : (
-            ""
+            <span className="w-[18px] inline-block" />
           )}
         </span>
 
         {/* Folder name */}
         <span
           onClick={() => setSelectedId(folder.id)}
-          className="flex items-center gap-1.5 text-white text-sm sm:text-base cursor-pointer flex-1 truncate"
+          className="flex items-center gap-1.5 text-white text-xs sm:text-sm md:text-base cursor-pointer flex-1 truncate"
         >
-          <FcOpenedFolder /> {folder.name}
+          <FcOpenedFolder className="shrink-0" />
+          <span className="truncate">{folder.name}</span>
         </span>
 
         {/* Actions */}
-        <span className="flex items-center gap-3 text-white">
+        <span className="flex items-center gap-2 sm:gap-3 text-white shrink-0">
           <button
             onClick={() => {
               setShowInput(true);
               setConfirmDelete(false);
               setAskPassword(false);
             }}
-            className="hover:text-[#5bd68e]"
+            className="hover:text-[#5bd68e] p-1 sm:p-0 text-sm sm:text-base"
           >
             <FaPlus />
           </button>
@@ -123,7 +124,7 @@ export default function FolderNode({
               setConfirmDelete(true);
               setShowInput(false);
             }}
-            className="hover:text-red-400"
+            className="hover:text-red-400 p-1 sm:p-0 text-sm sm:text-base"
           >
             <MdDelete />
           </button>
@@ -132,18 +133,18 @@ export default function FolderNode({
 
       {/* Inline Add Input */}
       {showInput && (
-        <div className="ml-6 mt-1 flex gap-2 justify-between items-center border border-white rounded-md">
+        <div className="ml-4 sm:ml-6 mt-1 flex flex-col sm:flex-row gap-2 justify-between items-stretch sm:items-center border border-white/20 rounded-md p-1">
           <input
             autoFocus
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addSubFolder()}
             placeholder="New folder name"
-            className="py-1 px-2 rounded-md text-sm w-full outline-0 text-white bg-transparent"
+            className="py-1 px-2 rounded-md text-xs sm:text-sm w-full outline-0 text-white bg-transparent"
           />
 
-          <div className="flex justify-center items-center gap-3 bg-white p-1.5 rounded-r-sm">
-            <button onClick={addSubFolder} className="hover:text-green-400 text-lg">
+          <div className="flex justify-end sm:justify-center items-center gap-3 bg-white p-1.5 rounded-md sm:rounded-r-sm">
+            <button onClick={addSubFolder} className="hover:text-green-400 text-base sm:text-lg">
               <FaPlus />
             </button>
             <button
@@ -151,7 +152,7 @@ export default function FolderNode({
                 setShowInput(false);
                 setNewName("");
               }}
-              className="hover:text-red-400 text-lg"
+              className="hover:text-red-400 text-base sm:text-lg"
             >
               <MdDelete />
             </button>
@@ -186,14 +187,14 @@ export default function FolderNode({
               return;
             }
 
-            deleteFolder(); // actual delete
+            deleteFolder();
           }}
         />
       )}
 
       {/* Children */}
       {open && folder.children?.length > 0 && (
-        <div className="ml-4 mt-1 space-y-1">
+        <div className="ml-3 sm:ml-4 mt-1 space-y-1">
           {folder.children.map((child) => (
             <FolderNode
               key={child.id}

@@ -10,26 +10,28 @@ export default function InlineModal({
   onConfirm,
 }) {
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white p-5 rounded-xl shadow-xl w-96">
-        <h3 className="font-bold text-lg">{title}</h3>
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-3 sm:px-4">
+      <div className="bg-white p-4 sm:p-5 rounded-xl shadow-xl w-full max-w-[92%] sm:max-w-sm md:max-w-md">
+        <h3 className="font-bold text-base sm:text-lg">{title}</h3>
 
         {description && (
-          <p className="text-sm text-gray-600 mt-2">{description}</p>
+          <p className="text-xs sm:text-sm text-gray-600 mt-2 leading-relaxed">
+            {description}
+          </p>
         )}
 
-        <div className="flex justify-end gap-3 mt-5">
+        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 mt-4 sm:mt-5">
           <button
             onClick={onClose}
-            className="px-4 py-1 rounded-md border"
+            className="px-3 sm:px-4 py-1.5 rounded-md border text-xs sm:text-sm hover:bg-gray-100 transition"
           >
             {cancelText}
           </button>
 
           <button
             onClick={onConfirm}
-            className={`px-4 py-1 rounded-md text-white ${
-              danger ? "bg-red-600 hover:bg-red-700" : "bg-blue-600"
+            className={`px-3 sm:px-4 py-1.5 rounded-md text-white text-xs sm:text-sm transition ${
+              danger ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
             {confirmText}
@@ -39,4 +41,3 @@ export default function InlineModal({
     </div>
   );
 }
-

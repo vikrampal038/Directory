@@ -1,36 +1,17 @@
 @import "tailwindcss";
 
-/* .folder-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  line-height: 1.8;
-  white-space: nowrap;
-  pointer-events: auto; 
+@keyframes scaleIn {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-.folder-actions {
-  margin-left:5px;
-  display: inline-flex;
-  gap: px;
+.animate-scaleIn {
+  animation: scaleIn 0.25s ease-out forwards;
 }
 
-.folder{
-    margin-left:0px;
-}
-
-
-.folder-btn {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.folder-btn:hover {
-  color: #5b5bd6;
-}
-
-.folder-name {
-  cursor: pointer;
-} */
