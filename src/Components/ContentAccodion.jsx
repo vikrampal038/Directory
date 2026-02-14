@@ -6,7 +6,7 @@ import {
 } from "react-icons/md";
 import InlineModal from "./InlineModal";
 import AdminPasswordModal from "./AdminPasswordModal";
-import { verifyAdminPassword } from "../utils/adminAuth";
+import { verifyDeletePassword } from "../utils/loginAuth"; // ✅ correct import
 
 export default function ContentAccordion({ contents, onDelete }) {
   const [openId, setOpenId] = useState(null);
@@ -16,18 +16,19 @@ export default function ContentAccordion({ contents, onDelete }) {
   if (!contents.length)
     return (
       <div className="text-sm sm:text-lg md:text-xl font-bold tracking-wider min-h-40 sm:min-h-48 flex items-center justify-center text-white text-center rounded-2xl w-full px-3">
-        <h1 className="bg-zinc-600 border rounded-2xl px-4 py-2 sm:px-6 md:px-10">
-          This folder is empty. Add some content to get started.
-        </h1>
+        <span className="bg-zinc-600 border rounded-2xl px-4 py-2 sm:px-6 md:px-10 flex flex-col gap-2">
+          <h1>📂 This is a main folder.</h1>
+          <h2> Select a subfolder from the left to view or add content.</h2>
+        </span>
       </div>
     );
 
   return (
-    <div className="flex flex-col justify-center items-center gap-2 sm:gap-3 w-full px-2 sm:px-0">
+    <div className="flex mt-10 flex-col justify-center items-center gap-2 sm:gap-3 w-full px-2 sm:px-0">
       {contents.map((c) => (
         <div
           key={c.id}
-          className="w-full max-w-full sm:max-w-xl md:max-w-3xl lg:max-w-4xl justify-center items-center"
+          className="w-full max-w-full sm:max-w-xl md:max-w-3xl lg:max-w-6xl justify-center items-center"
         >
           <div
             className="w-full cursor-pointer py-2 px-2 sm:py-2 sm:px-2 rounded-lg bg-[#f5f5f5] flex justify-between items-center gap-2"
@@ -58,7 +59,7 @@ export default function ContentAccordion({ contents, onDelete }) {
 
           {openId === c.id && (
             <div className="p-2 sm:p-3 md:p-4 flex flex-col justify-center items-start gap-4 sm:gap-5 w-full">
-              {/* ✅ Description as bullet points */}
+              {/* Description as bullet points */}
               <div className="text-white w-full text-sm sm:text-base leading-relaxed">
                 <ul className="list-disc pl-5 sm:pl-6 space-y-1.5 sm:space-y-2">
                   {c.description
@@ -67,7 +68,7 @@ export default function ContentAccordion({ contents, onDelete }) {
                     .map((line, index) => (
                       <li
                         key={index}
-                        className="leading-6 sm:leading-7 wrap-break-word"
+                        className="leading-6 sm:leading-7 break-words"
                       >
                         {line}
                       </li>
@@ -77,6 +78,7 @@ export default function ContentAccordion({ contents, onDelete }) {
 
               {c.file && c.file.data?.startsWith("data:image") && (
                 <img
+                  loading="lazy"
                   src={c.file.data}
                   className="w-full max-h-[40vh] sm:max-h-[60vh] md:max-h-[70vh] object-contain rounded-lg border"
                 />
@@ -84,6 +86,7 @@ export default function ContentAccordion({ contents, onDelete }) {
 
               {c.file && !c.file.data?.startsWith("data:image") && (
                 <iframe
+                  loading="lazy"
                   src={c.file.data}
                   title="Preview"
                   className="w-full h-[40vh] sm:h-[55vh] md:h-[70vh] rounded-md border"
@@ -107,7 +110,7 @@ export default function ContentAccordion({ contents, onDelete }) {
         />
       )}
 
-      {/* Step 2: Ask password */}
+      {/* Step 2: Ask delete password */}
       {askPassword && (
         <AdminPasswordModal
           onClose={() => {
@@ -115,12 +118,21 @@ export default function ContentAccordion({ contents, onDelete }) {
             setDeleteId(null);
           }}
           onConfirm={(password, setError) => {
-            const ok = verifyAdminPassword(password);
+            const user = JSON.parse(localStorage.getItem("user")); // { email, name }
+
+            if (!user?.email) {
+              setError("User not logged in");
+              return;
+            }
+
+            const ok = verifyDeletePassword(user.email, password);
+
             if (!ok) {
               setError("Incorrect password");
               return;
             }
 
+            setError("");
             onDelete(deleteId);
             setAskPassword(false);
             setDeleteId(null);

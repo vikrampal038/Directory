@@ -1,27 +1,44 @@
 import bcrypt from "bcryptjs";
 
-// 👇 DEV helper (password generate karne ke liye – baad me comment kar dena)
-// console.log(bcrypt.hashSync("admin1@123", 10));
-// console.log(bcrypt.hashSync("admin2@123", 10));
-// console.log(bcrypt.hashSync("admin3@123", 10));
+// 👇 DEV helper (naya hash banane ke liye)
+// console.log(bcrypt.hashSync("intsol@12", 10));
+// console.log(bcrypt.hashSync("nikhil@123", 10));
 
 export const USERS = [
   {
-    email: "admin1@gmail.com",
-    passwordHash: "$2b$10$JwSkx3cXoiuXOVNIvdWtqujRQLWI5EspXD1djNlG066LHMPBdedue", // client@123 ka hash
+    email: "vikrampal038@gmail.com",
+    name: "Vikram Pal",
+    passwordHash:
+      "$2b$10$SJ7VBoz6x8FPVG/P.IEf6.vj1RcP73hgBPbZDDI7s66doptubCodq",
+    deletePasswordHash:
+      "$2b$10$VO6WAdDFneLcBd5O0ueEF.io7Fwt1xOQ.5LxWwjST7EmyNpBLhImS",
   },
   {
-    email: "admin2@gmail.com",
-    passwordHash: "$2b$10$sHRMFIlZMMbg/bj.mcN16.XjcC3wwuCMqDv8aGnx2/k0TW1KLtHQu", // staff@123 ka hash
-  },
-  {
-    email: "admin3@gmail.com",
-    passwordHash: "$2b$10$ad8u.NP.WRLiQ5.FqS8LLuMaOqnfF8gX4t.g4vhXineWidky55CZ2", // staff@123 ka hash
+    email: "singhnikhil100@gmail.com",
+    name: "Nikhil Singh",
+    passwordHash:
+      "$2b$10$ngQb3pDDBOSsxoydW/smNuvB40cEwhqR4lWQrX6DU787kCVTnn3ri",
+    deletePasswordHash:
+      "$2b$10$quxhoOPnIbJBN9pyxkVZ5OkzgJARKZwTuQXVXa5iUYA3PX68a69uK",
   },
 ];
 
 export function verifyLogin(email, password) {
   const user = USERS.find((u) => u.email === email);
+  if (!user) return null;
+
+  const ok = bcrypt.compareSync(password, user.passwordHash);
+  if (!ok) return null;
+
+  return { email: user.email, name: user.name };
+}
+
+export async function verifyDeletePassword(email, inputPassword) {
+  const bcrypt = (await import("bcryptjs")).default;
+  if (!email || !inputPassword) return false;
+
+  const user = USERS.find((u) => u.email === email);
   if (!user) return false;
-  return bcrypt.compareSync(password, user.passwordHash);
+
+  return bcrypt.compareSync(inputPassword, user.deletePasswordHash);
 }

@@ -4,10 +4,15 @@ import FolderTree from "./Components/FolderTree";
 import ContentArea from "./Components/ContentArea";
 import LoginModal from "./Components/LoginModal";
 import { FiLogOut } from "react-icons/fi";
+import { FaUserCircle } from "react-icons/fa";
 
 export default function App() {
   const [email, setEmail] = useState(
     () => localStorage.getItem("loggedInEmail") || null
+  );
+
+  const [loggedInName, setLoggedInName] = useState(
+    () => localStorage.getItem("loggedInName") || ""
   );
 
   const [folders, setFolders] = useState(() =>
@@ -26,27 +31,19 @@ export default function App() {
 
   const handleLoginSuccess = (userEmail) => {
     setEmail(userEmail);
-    setFolders(loadUserData(userEmail)); // ✅ user-specific data
-    localStorage.setItem("loggedInEmail", userEmail);
-    localStorage.setItem("isLoggedIn", "true");
+    setFolders(loadUserData(userEmail));
+
+    const name = localStorage.getItem("loggedInName") || "";
+    setLoggedInName(name);
   };
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
-    setEmail(null);
-    setSelectedId(null);
+    localStorage.removeItem("loggedInEmail");
+    localStorage.removeItem("loggedInName");
+    localStorage.removeItem("user");
+    window.location.reload();
   };
-
-  // ✅ Logout Button JSX (logic App.jsx me hi rahega)
-  const LogoutButton = (
-    <button
-      onClick={handleLogout}
-      className="flex items-center justify-center gap-2 text-white bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all w-full sm:w-auto"
-    >
-      <FiLogOut className="text-sm" />
-      Logout
-    </button>
-  );
 
   return (
     <>
@@ -55,13 +52,36 @@ export default function App() {
       {loggedIn && (
         <div className="flex h-screen w-full flex-col sm:flex-row">
           {/* Sidebar */}
-          <div className="bg-[#0F1A18] w-full sm:w-[40%] md:w-[30%] lg:w-[20%] h-[35vh] sm:h-full overflow-y-auto">
-            <FolderTree
-              data={folders}
-              setData={setFolders}
-              selectedId={selectedId}
-              setSelectedId={setSelectedId}
-            />
+          <div className="bg-[#0F1A18] w-full sm:w-[40%] md:w-[30%] lg:w-[20%] h-[35vh] sm:h-full overflow-hidden flex flex-col">
+            {/* Folder Tree */}
+            <div className="flex-1 overflow-y-auto">
+              <FolderTree
+                data={folders}
+                setData={setFolders}
+                selectedId={selectedId}
+                setSelectedId={setSelectedId}
+              />
+            </div>
+
+            {/* 🔥 User Info Bottom */}
+            <div className="shrink-0 border-t border-white/10 p-3 bg-[#0B1412]">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full">
+                  <FaUserCircle className="text-lg text-white" />
+                  <span className="text-white text-xs sm:text-sm font-medium max-w-[120px] truncate">
+                    {loggedInName || "User"}
+                  </span>
+                </div>
+
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-1.5 text-white bg-red-600 hover:bg-red-700 px-2.5 py-1.5 rounded-full text-xs font-semibold transition-all"
+                >
+                  <FiLogOut className="text-sm" />
+                  <span className="hidden sm:inline">Logout</span>
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Content */}
@@ -70,7 +90,6 @@ export default function App() {
               folders={folders}
               setFolders={setFolders}
               selectedId={selectedId}
-              rightActions={LogoutButton}  // ✅ Navbar ke saath align hoga
             />
           </div>
         </div>

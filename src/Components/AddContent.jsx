@@ -35,7 +35,7 @@ export default function AddContent({ onAdd }) {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center gap-5 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl p-4 sm:p-6 bg-white rounded-2xl shadow-xl mx-auto">
+    <div className="flex flex-col mt-10 justify-center items-center gap-5 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl p-4 sm:p-6 bg-white rounded-2xl shadow-xl mx-auto">
       <h3 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-wider text-center">
         Add Content
       </h3>

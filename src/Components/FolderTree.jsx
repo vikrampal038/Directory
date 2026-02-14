@@ -30,7 +30,7 @@ export default function FolderTree({
       <div className="sticky top-0 z-10 bg-[#0F1A18] py-3 sm:py-4 px-3 sm:px-4 border-b border-white/10">
         <div className="flex justify-between items-center gap-2">
           <h3 className="text-white font-bold tracking-widest text-sm sm:text-base">
-            Explore
+            Process App
           </h3>
           <button
             onClick={() => setShowInput((p) => !p)}
